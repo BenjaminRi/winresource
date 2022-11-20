@@ -10,16 +10,16 @@
 //! # Example
 //!
 //! ```rust
-//! # extern crate winres;
+//! # extern crate winresource;
 //! # use std::io;
 //! # fn test_main() -> io::Result<()> {
 //! if cfg!(target_os = "windows") {
-//!     let mut res = winres::WindowsResource::new();
+//!     let mut res = winresource::WindowsResource::new();
 //!     res.set_icon("test.ico")
 //! #      .set_output_directory(".")
 //!        .set("InternalName", "TEST.EXE")
 //!        // manually set version 1.0.0.0
-//!        .set_version_info(winres::VersionInfo::PRODUCTVERSION, 0x0001000000000000);
+//!        .set_version_info(winresource::VersionInfo::PRODUCTVERSION, 0x0001000000000000);
 //!     res.compile()?;
 //! }
 //! # Ok(())
@@ -114,7 +114,7 @@ impl WindowsResource {
     /// | `"ProductName"`      | `package.name`               |
     /// | `"FileDescription"`  | `package.description`        |
     ///
-    /// Furthermore if a section `package.metadata.winres` exists
+    /// Furthermore if a section `package.metadata.winresource` exists
     /// in `Cargo.toml` it will be parsed. Values in this section take precedence
     /// over the values provided natively by cargo. Only the string table
     /// of the version struct can be set this way.
@@ -126,7 +126,7 @@ impl WindowsResource {
     ///
     /// ```,toml
     /// #Cargo.toml
-    /// [package.metadata.winres]
+    /// [package.metadata.winresource]
     /// OriginalFilename = "testing.exe"
     /// FileDescription = "⛄❤☕"
     /// LegalCopyright = "Copyright © 2016"
@@ -283,11 +283,11 @@ impl WindowsResource {
     ///
     /// ```
     /// extern crate winapi;
-    /// extern crate winres;
+    /// extern crate winresource;
     /// # use std::io;
     /// fn main() {
     ///   if cfg!(target_os = "windows") {
-    ///     let mut res = winres::WindowsResource::new();
+    ///     let mut res = winresource::WindowsResource::new();
     /// #   res.set_output_directory(".");
     ///     res.set_language(winapi::um::winnt::MAKELANGID(
     ///         winapi::um::winnt::LANG_ENGLISH,
@@ -409,7 +409,7 @@ impl WindowsResource {
     /// Thus, everytime it is executed, a Windows UAC dialog will appear.
     ///
     /// ```rust
-    /// let mut res = winres::WindowsResource::new();
+    /// let mut res = winresource::WindowsResource::new();
     /// res.set_manifest(r#"
     /// <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
     /// <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
@@ -538,9 +538,9 @@ impl WindowsResource {
     /// Define a menu resource:
     ///
     /// ```rust
-    /// # extern crate winres;
+    /// # extern crate winresource;
     /// # if cfg!(target_os = "windows") {
-    ///     let mut res = winres::WindowsResource::new();
+    ///     let mut res = winresource::WindowsResource::new();
     ///     res.append_rc_content(r##"sample MENU
     /// {
     ///     MENUITEM "&Soup", 100
@@ -774,21 +774,21 @@ fn parse_cargo_toml(props: &mut HashMap<String, String>) -> io::Result<()> {
     if let Ok(ml) = cargo_toml.parse::<toml::Value>() {
         if let Some(pkg) = ml.get("package") {
             if let Some(pkg) = pkg.get("metadata") {
-                if let Some(pkg) = pkg.get("winres") {
+                if let Some(pkg) = pkg.get("winresource") {
                     if let Some(pkg) = pkg.as_table() {
                         for (k, v) in pkg {
                             // println!("{} {}", k ,v);
                             if let Some(v) = v.as_str() {
                                 props.insert(k.clone(), v.to_string());
                             } else {
-                                println!("package.metadata.winres.{} is not a string", k);
+                                println!("package.metadata.winresource.{} is not a string", k);
                             }
                         }
                     } else {
-                        println!("package.metadata.winres is not a table");
+                        println!("package.metadata.winresource is not a table");
                     }
                 } else {
-                    println!("package.metadata.winres does not exist");
+                    println!("package.metadata.winresource does not exist");
                 }
             } else {
                 println!("package.metadata does not exist");

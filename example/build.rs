@@ -1,4 +1,4 @@
-extern crate winres;
+extern crate winresource;
 
 fn main() {
     // only run if target os is windows
@@ -9,7 +9,7 @@ fn main() {
     // only build the resource for release builds
     // as calling rc.exe might be slow
     if std::env::var("PROFILE").unwrap() == "release" {
-        let mut res = winres::WindowsResource::new();
+        let mut res = winresource::WindowsResource::new();
         if cfg!(unix) {
             // paths for X64 on archlinux
             res.set_toolkit_path("/usr/x86_64-w64-mingw32/bin");

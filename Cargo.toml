@@ -1,11 +1,11 @@
 [package]
-name = "winres"
+name = "winresource"
 description = "Create and set windows icons and metadata for executables"
 version = "0.1.11"
 authors = ["Max Resch <resch.max@gmail.com>"]
 license = "MIT"
-repository = "https://github.com/mxre/winres"
-documentation= "https://docs.rs/winres/*/winres/"
+repository = "https://github.com/BenjaminRi/winresource"
+documentation= "https://docs.rs/winresource/*/winresource/"
 
 [lib]
 path = "lib.rs"

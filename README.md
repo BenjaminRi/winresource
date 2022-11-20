@@ -1,9 +1,9 @@
-# winres
+# winresource
 
 A simple library to facilitate adding metainformation and icons to windows
 executables and dynamic libraries.
 
-[Documentation](https://docs.rs/winres/*/winres/)
+[Documentation](https://docs.rs/winresource/*/winresource/)
 
 ## Toolkit
 
@@ -19,7 +19,7 @@ for the GNU ABI you'll need minGW64.
 
 Windows SDK can be found in the registry, minGW64 has to be in the path.
 
-## Using winres
+## Using winresource
 
 First, you will need to add a build script to your crate (`build.rs`)
 by adding it to your crate's `Cargo.toml` file:
@@ -30,7 +30,7 @@ by adding it to your crate's `Cargo.toml` file:
 build = "build.rs"
 
 [build-dependencies]
-winres = "0.1"
+winresource = "0.1"
 ```
 
 Next, you have to write a build script. A short
@@ -39,11 +39,11 @@ example is shown below.
 ```rust
 // build.rs
 
-extern crate winres;
+extern crate winresource;
 
 fn main() {
   if cfg!(target_os = "windows") {
-    let mut res = winres::WindowsResource::new();
+    let mut res = winresource::WindowsResource::new();
     res.set_icon("test.ico");
     res.compile().unwrap();
   }
@@ -58,7 +58,7 @@ Note that using this crate on non windows platform is undefined behavior. It doe
 safeguards against doing so. None-the-less it will compile; however `build.rs`, as shown above, should contain
 a `cfg` option.
 
-Another possibility is using `cfg` as a directive to avoid building `winres` on unix platforms
+Another possibility is using `cfg` as a directive to avoid building `winresource` on unix platforms
 alltogether. This will save build time. So the example from before could look like this
 
 ```toml
@@ -67,7 +67,7 @@ alltogether. This will save build time. So the example from before could look li
 build = "build.rs"
 
 [target.'cfg(windows)'.build-dependencies]
-winres = "0.1"
+winresource = "0.1"
 ```
 
 Next, you have to write a build script. A short
@@ -77,11 +77,11 @@ example is shown below.
 // build.rs
 
 #[cfg(windows)]
-extern crate winres;
+extern crate winresource;
 
 #[cfg(windows)]
 fn main() {
-    let mut res = winres::WindowsResource::new();
+    let mut res = winresource::WindowsResource::new();
     res.set_icon("test.ico");
     res.compile().unwrap();
 }
@@ -93,10 +93,10 @@ fn main() {
 
 ## Additional Options
 
-For added convenience, `winres` parses, `Cargo.toml` for a `package.metadata.winres` section:
+For added convenience, `winresource` parses, `Cargo.toml` for a `package.metadata.winresource` section:
 
 ```toml
-[package.metadata.winres]
+[package.metadata.winresource]
 OriginalFilename = "PROGRAM.EXE"
 LegalCopyright = "Copyright © 2016"
 #...
