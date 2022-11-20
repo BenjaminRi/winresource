@@ -161,10 +161,19 @@ impl WindowsResource {
             "ProductName".to_string(),
             env::var("CARGO_PKG_NAME").unwrap(),
         );
-        props.insert(
-            "FileDescription".to_string(),
-            env::var("CARGO_PKG_NAME").unwrap(),
-        );
+
+        // If there is no description, fallback to name
+        let description = if let Ok(description) = env::var("CARGO_PKG_DESCRIPTION") {
+            if !description.is_empty() {
+                description
+            } else {
+                env::var("CARGO_PKG_NAME").unwrap()
+            }
+        } else {
+            env::var("CARGO_PKG_NAME").unwrap()
+        };
+
+        props.insert("FileDescription".to_string(), description);
 
         parse_cargo_toml(&mut props).unwrap();
 
