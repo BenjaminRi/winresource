@@ -40,52 +40,21 @@ Next, you have to write a build script. A short example is shown below.
 extern crate winresource;
 
 fn main() {
-  if cfg!(target_os = "windows") {
-    let mut res = winresource::WindowsResource::new();
-    res.set_icon("test.ico");
-    res.compile().unwrap();
-  }
+    if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
+        let mut res = winresource::WindowsResource::new();
+        res.set_icon("test.ico");
+        res.compile().unwrap();
+    }
 }
 ```
 
-Thats it. The file `test.ico` should be located in the same directory as `build.rs`. Metainformation (like program version and description) is taken from `Cargo.toml`'s `[package]` section.
+That's it. The file `test.ico` should be located in the same directory as `build.rs`. Metainformation (like program version and description) is taken from `Cargo.toml`'s `[package]` section.
 
-Note that using this crate on non windows platform is undefined behavior. It does not contain safeguards against doing so. None-the-less it will compile; however `build.rs`, as shown above, should contain a `cfg` option.
-
-Another possibility is using `cfg` as a directive to avoid building `winresource` on unix platforms alltogether. This will save build time. So the example from before could look like this
-
-```toml
-[package]
-#...
-build = "build.rs"
-
-[target.'cfg(windows)'.build-dependencies]
-winresource = "0.1"
-```
-
-Next, you have to write a build script. A short example is shown below.
-
-```rust
-// build.rs
-
-#[cfg(windows)]
-extern crate winresource;
-
-#[cfg(windows)]
-fn main() {
-    let mut res = winresource::WindowsResource::new();
-    res.set_icon("test.ico");
-    res.compile().unwrap();
-}
-
-#[cfg(unix)]
-fn main() {
-}
-```
+Please note: Using `#[cfg(target_os = "windows")]` in `build.rs` may not work as expected because `build.rs` is executed on the host. This means that `target_os` is always equal to `host_os` when compiling `build.rs`. E.g. if we use `rustc` on Linux and want to cross-compile binaries that run on Windows, `target_os` in `build.rs` is `"linux"`. However, `CARGO_CFG_TARGET_OS` should always be defined and contains the actual target operating system, though it can only be checked at runtime of the build script.
 
 ## Additional Options
 
-For added convenience, `winresource` parses, `Cargo.toml` for a `package.metadata.winresource` section:
+For added convenience, `winresource` parses `Cargo.toml` for a `package.metadata.winresource` section:
 
 ```toml
 [package.metadata.winresource]
