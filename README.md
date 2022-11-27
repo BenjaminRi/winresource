@@ -2,7 +2,7 @@
 
 A small [Rust](https://www.rust-lang.org/) library to facilitate adding [Resources](https://en.wikipedia.org/wiki/Resource_(Windows)) (metainformation and icons) to [Portable Executables](https://en.wikipedia.org/wiki/Portable_Executable) (Windows executables and dynamic libraries). Further details: [API documentation](https://docs.rs/winresource/*/winresource/) and [published crate](https://crates.io/crates/winresource).
 
-Essentially, `winresource` embeds crate metadata into EXE files:
+By default, the metadata is inherited from the package description, but it can also be manually set or overridden in the build script or in the `[package.metadata.winresource]` section in `Cargo.toml`:
 
 ![How winresource sets the properties of a portable executable](/winresource_embed_properties.png)
 
