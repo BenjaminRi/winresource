@@ -1,10 +1,12 @@
 # winresource
 
-A simple library to facilitate adding [Resources](https://en.wikipedia.org/wiki/Resource_(Windows)) (metainformation and icons) to [Portable Executables](https://en.wikipedia.org/wiki/Portable_Executable) (Windows executables and dynamic libraries).
+A small [Rust](https://www.rust-lang.org/) library to facilitate adding [Resources](https://en.wikipedia.org/wiki/Resource_(Windows)) (metainformation and icons) to [Portable Executables](https://en.wikipedia.org/wiki/Portable_Executable) (Windows executables and dynamic libraries). Further details: [API documentation](https://docs.rs/winresource/*/winresource/) and [published crate](https://crates.io/crates/winresource).
+
+Essentially, `winresource` embeds crate metadata into EXE files:
+
+![How winresource sets the properties of a portable executable](/winresource_embed_properties.png)
 
 Note: `winresource` is a fork of [winres](https://github.com/mxre/winres) which no longer works on Rust 1.61 or higher and has been [left unmaintained](https://github.com/mxre/winres/issues/40).
-
-[Documentation](https://docs.rs/winresource/*/winresource/)
 
 ## Toolkit
 
