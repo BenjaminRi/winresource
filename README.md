@@ -21,6 +21,8 @@ If you are using Rust with the MSVC ABI you will need the Windows SDK for the GN
 
 Windows SDK can be found in the registry, minGW64 has to be in the path.
 
+When cross-compiling from MacOS, install mingw-w64, for example with
+`brew install mingw-w64`
 ## Using winresource
 
 First, you will need to add a build script to your crate (`build.rs`) by adding it to your crate's `Cargo.toml` file:
@@ -48,6 +50,21 @@ fn main() {
         res.compile().unwrap();
     }
 }
+```
+
+On MacOS, you will need to additionally specify `windres` and `ar` executables:
+```rust
+
+fn main() {
+    if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
+        let mut res = winresource::WindowsResource::new();
+        res.set_ar_path("x86_64-w64-mingw32-ar");
+        res.set_windres_path("x86_64-w64-mingw32-windres");
+        res.set_icon("test.ico");
+        res.compile().unwrap();
+    }
+}
+
 ```
 
 That's it. The file `test.ico` should be located in the same directory as `build.rs`. Metainformation (like program version and description) is taken from `Cargo.toml`'s `[package]` section.
