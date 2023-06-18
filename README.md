@@ -8,18 +8,37 @@ By default, the metadata is inherited from the package description, but it can a
 
 Note: `winresource` is a fork of [winres](https://github.com/mxre/winres) which no longer works on Rust 1.61 or higher and has been [left unmaintained](https://github.com/mxre/winres/issues/40).
 
-## Toolkit
+## Getting started
 
-Before we begin you need to have the appropriate tools installed.
- - `rc.exe` from the [Windows SDK]
- - `windres.exe` and `ar.exe` from [minGW64]
- 
-[Windows SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk
-[minGW64]: http://mingw-w64.org
+For this crate to work, you need to have the appropriate tools installed. Without these tools, the build process for the Windows target will fail. The prerequisites differ depending on your host operating system and the targeted ABI.
 
-If you are using Rust with the MSVC ABI you will need the Windows SDK for the GNU ABI you'll need minGW64.
+### Compiling on Windows
 
-Windows SDK can be found in the registry, minGW64 has to be in the path.
+If you are using Rust with the MSVC ABI, you'll need `rc.exe` from the [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk). The build script will search for the location of the Windows SDK in the registry.
+
+If you are using Rust with the GNU ABI, you'll need `windres.exe` and `ar.exe` from [MinGW-w64](http://mingw-w64.org). Note that the location of the MinGW-w64 toolchain has to be in the path environment variable.
+
+### Cross-compiling on a non-Windows OS
+
+If you are cross-compiling on a non-Windows OS, you need to install the `mingw-w64` cross-compiler toolchain.
+
+On Debian-based Linux distros like Ubuntu, you can do this with:
+
+```sh
+sudo apt-get install mingw-w64
+```
+
+On Arch Linux, install the entire [mingw-w64 group](https://archlinux.org/groups/x86_64/mingw-w64/):
+
+```sh
+sudo pacman -S mingw-w64
+```
+
+On macOS, you can get the toolchain with:
+
+```sh
+brew install mingw-w64
+```
 
 ## Using winresource
 
