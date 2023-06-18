@@ -1,0 +1,19 @@
+[package]
+name = "multi_binary_example"
+description = "Winres - example script for a library with 2 binaries"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["rlib"]
+
+[build-dependencies]
+winresource = { path = ".." }
+
+[[bin]]
+name = "a"
+path = "bin/a.rs"
+
+[[bin]]
+name = "example-b"
+path = "bin/b.rs"
