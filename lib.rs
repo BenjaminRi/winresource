@@ -614,8 +614,8 @@ impl WindowsResource {
         self
     }
 
-    fn compile_with_toolkit_gnu<'a>(&self, input: &'a str, output_dir: &'a str) -> io::Result<()> {
-        let output = PathBuf::from(output_dir).join("resource.o");
+    fn compile_with_toolkit_gnu<'a>(&self, input: &'a str, output_dir: &'a str, binary: Option<&'a str>) -> io::Result<()> {
+        let output = PathBuf::from(output_dir).join(format!("{}.o", binary.unwrap_or("resource")));
         let input = PathBuf::from(input);
         let status = process::Command::new(&self.windres_path)
             .current_dir(&self.toolkit_path)
@@ -647,26 +647,52 @@ impl WindowsResource {
         println!("cargo:rustc-link-search=native={}", output_dir);
 
         if version_check::is_min_version("1.61.0").unwrap_or(true) {
-            println!("cargo:rustc-link-lib=static:+whole-archive=resource");
+            match binary {
+                None => {
+                    println!("cargo:rustc-link-lib=static:+whole-archive=resource");
+                }
+                Some(binary) => {
+                    println!("cargo:rustc-link-arg-bin={}=--whole-archive", binary);
+                    println!("cargo:rustc-link-arg-bin={}={}.o", binary, binary);
+                }
+            }
         } else {
-            println!("cargo:rustc-link-lib=static=resource");
+            match binary {
+                None => {
+                    println!("cargo:rustc-link-lib=static=resource");
+                }
+                Some(binary) => {
+                    println!("cargo:rustc-link-arg-bin={}={}.o", binary, binary);
+                }
+            }
         }
 
         Ok(())
     }
 
-    /// Run the resource compiler
+    /// `cargo:rustc-link-lib=` and `cargo:rustc-link-search` on the console,
+    /// so that the cargo build script can link the compiled resource file.
+    pub fn compile(&self) -> io::Result<()> {
+        self.compile_internal(None)
+    }
+
+    /// Run the resource compiler for a specific binary.
     ///
     /// This function generates a resource file from the settings or
     /// uses an existing resource file and passes it to the resource compiler
     /// of your toolkit.
     ///
-    /// Further more we will print the correct statements for
-    /// `cargo:rustc-link-lib=` and `cargo:rustc-link-search` on the console,
-    /// so that the cargo build script can link the compiled resource file.
-    pub fn compile(&self) -> io::Result<()> {
+    /// Furthermore we will print the correct statements for
+    /// `cargo:rustc-link-arg-bin=` and `cargo:rustc-link-search` on the console,
+    /// so that the cargo build script can link the compiled resource file for the desired binary.
+    pub fn compile_for(&self, binary: &str) -> io::Result<()> {
+        self.compile_internal(Some(binary))
+    }
+
+    fn compile_internal(&self, binary: Option<&str>) -> io::Result<()> {
         let output = PathBuf::from(&self.output_directory);
         let rc = output.join("resource.rc");
+        let rc = output.join(format!("{}.rc", binary.unwrap_or("resource")));
         if self.rc_file.is_none() {
             self.write_resource_file(&rc)?;
         }
@@ -678,8 +704,8 @@ impl WindowsResource {
 
         let target_env = std::env::var("CARGO_CFG_TARGET_ENV").unwrap();
         match target_env.as_str() {
-            "gnu" => self.compile_with_toolkit_gnu(rc.as_str(), &self.output_directory),
-            "msvc" => self.compile_with_toolkit_msvc(rc.as_str(), &self.output_directory),
+            "gnu" => self.compile_with_toolkit_gnu(rc.as_str(), &self.output_directory, binary),
+            "msvc" => self.compile_with_toolkit_msvc(rc.as_str(), &self.output_directory, binary),
             _ => Err(io::Error::new(
                 io::ErrorKind::Other,
                 "Can only compile resource file when target_env is \"gnu\" or \"msvc\"",
@@ -687,7 +713,7 @@ impl WindowsResource {
         }
     }
 
-    fn compile_with_toolkit_msvc<'a>(&self, input: &'a str, output_dir: &'a str) -> io::Result<()> {
+    fn compile_with_toolkit_msvc<'a>(&self, input: &'a str, output_dir: &'a str, binary: Option<&str>) -> io::Result<()> {
         let rc_exe = PathBuf::from(&self.toolkit_path).join("rc.exe");
         let rc_exe = if !rc_exe.exists() {
             if cfg!(target_arch = "x86_64") {
@@ -699,7 +725,7 @@ impl WindowsResource {
             rc_exe
         };
         println!("Selected RC path: '{}'", rc_exe.display());
-        let output = PathBuf::from(output_dir).join("resource.lib");
+        let output = PathBuf::from(output_dir).join(format!("{}.lib", binary.unwrap_or("resource")));
         let input = PathBuf::from(input);
         let mut command = process::Command::new(&rc_exe);
         let command = command.arg(format!("/I{}", env::var("CARGO_MANIFEST_DIR").unwrap()));
@@ -732,7 +758,14 @@ impl WindowsResource {
         }
 
         println!("cargo:rustc-link-search=native={}", output_dir);
-        println!("cargo:rustc-link-lib=dylib=resource");
+        match binary {
+            None => {
+                println!("cargo:rustc-link-lib=dylib=resource");
+            }
+            Some(binary) => {
+                println!("cargo:rustc-link-arg-bin={}={}.lib", binary, binary);
+            }
+        }
         Ok(())
     }
 }
