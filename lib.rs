@@ -376,7 +376,9 @@ impl WindowsResource {
     /// [here](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadicona)
     /// for Windows docs demonstrating this.
     pub fn set_icon<'a>(&mut self, path: &'a str) -> &mut Self {
-        self.set_icon_with_id(path, "32512")
+        const DEFAULT_APPLICATION_ICON_ID: &str = "32512";
+
+        self.set_icon_with_id(path, DEFAULT_APPLICATION_ICON_ID)
     }
 
     /// Add an icon with the specified name ID.
