@@ -373,7 +373,7 @@ impl WindowsResource {
     /// Equivalent to `set_icon_with_id(path, "32512")`.
     ///
     /// Windows uses `32512` as the default icon ID. See
-    /// [here](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-loadicona)
+    /// [here](https://learn.microsoft.com/en-us/windows/win32/menurc/about-icons#icon-types)
     /// for Windows docs demonstrating this.
     pub fn set_icon<'a>(&mut self, path: &'a str) -> &mut Self {
         const DEFAULT_APPLICATION_ICON_ID: &str = "32512";
