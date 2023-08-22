@@ -10,8 +10,11 @@ documentation= "https://docs.rs/winresource/*/winresource/"
 [lib]
 path = "lib.rs"
 
+[features]
+default = ["toml"]
+
 [dependencies]
-toml = "0.7"
+toml = { version = "0.7", optional = true }
 version_check = "0.9"
 
 [dev-dependencies]

@@ -53,6 +53,7 @@ use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::process;
 
+#[cfg(feature = "toml")]
 extern crate toml;
 
 /// Version info field names
@@ -175,6 +176,7 @@ impl WindowsResource {
 
         props.insert("FileDescription".to_string(), description);
 
+        #[cfg(feature = "toml")]
         parse_cargo_toml(&mut props).unwrap();
 
         let mut version = 0_u64;
@@ -813,6 +815,7 @@ fn get_sdk() -> io::Result<Vec<PathBuf>> {
     Ok(kits)
 }
 
+#[cfg(feature = "toml")]
 fn parse_cargo_toml(props: &mut HashMap<String, String>) -> io::Result<()> {
     let cargo = Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()).join("Cargo.toml");
     let mut f = fs::File::open(cargo)?;
