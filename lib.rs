@@ -3,7 +3,7 @@
 //! This crate implements a simple generator for Windows resource (.rc) files
 //! for use with either Microsoft `rc.exe` resource compiler or with GNU `windres.exe`
 //!
-//! The [`WindowsResorce::compile()`] method is intended to be used from a build script and
+//! The [`WindowsResource::compile()`] method is intended to be used from a build script and
 //! needs environment variables from cargo to be set. It not only compiles the resource
 //! but directs cargo to link the resource compiler's output.
 //!
@@ -28,7 +28,7 @@
 //!
 //! # Defaults
 //!
-//! We try to guess some sensible default values from Cargo's build time environement variables
+//! We try to guess some sensible default values from Cargo's build time environment variables
 //! This is described in [`WindowsResource::new()`]. Furthermore we have to know where to find the
 //! resource compiler for the MSVC Toolkit. This can be done by looking up a registry key but
 //! for MinGW this has to be done manually.
@@ -42,7 +42,7 @@
 //! using Rust GNU 64-bit you have to use MinGW64. For MSVC this is simpler as (recent) Windows
 //! SDK always installs both versions on a 64-bit system.
 //!
-//! [`WindowsResorce::compile()`]: struct.WindowsResource.html#method.compile
+//! [`WindowsResource::compile()`]: struct.WindowsResource.html#method.compile
 //! [`WindowsResource::new()`]: struct.WindowsResource.html#method.new
 
 use std::collections::HashMap;
@@ -288,7 +288,7 @@ impl WindowsResource {
     /// which should only be set, when the `FILEFLAGS` property is set to
     /// `VS_FF_PRIVATEBUILD(0x08)` or `VS_FF_SPECIALBUILD(0x20)`
     ///
-    /// It is possible to use arbirtrary field names but Windows Explorer and other
+    /// It is possible to use arbitrary field names but Windows Explorer and other
     /// tools might not show them.
     pub fn set<'a>(&mut self, name: &'a str, value: &'a str) -> &mut Self {
         self.properties.insert(name.to_string(), value.to_string());
@@ -305,7 +305,7 @@ impl WindowsResource {
     /// `rc.exe`. This should be set to the root directory of the Windows SDK, e.g.,
     /// `"C:\Program Files (x86)\Windows Kits\10"`
     /// or, if multiple 10 versions are installed,
-    /// set it directly to the corret bin directory
+    /// set it directly to the correct bin directory
     /// `"C:\Program Files (x86)\Windows Kits\10\bin\10.0.14393.0\x64"`
     ///
     /// If it is left unset, it will look up a path in the registry,
@@ -421,7 +421,7 @@ impl WindowsResource {
     /// chosen as the application icon:
     /// <https://docs.microsoft.com/en-us/previous-versions/ms997538(v=msdn.10)?redirectedfrom=MSDN#choosing-an-icon>.
     ///
-    /// To keep things simple, we recommand you use only 16-bit unsigned integer
+    /// To keep things simple, we recommend you use only 16-bit unsigned integer
     /// name IDs, and add the application icon first with the lowest id:
     ///
     /// ```nocheck
@@ -473,7 +473,7 @@ impl WindowsResource {
     }
 
     /// Some as [`set_manifest()`] but a filename can be provided and
-    /// file is included by the resource compieler itself.
+    /// file is included by the resource compiler itself.
     /// This method works the same way as [`set_icon()`]
     ///
     /// [`set_manifest()`]: #method.set_manifest
@@ -568,7 +568,7 @@ impl WindowsResource {
     /// Set a path to an already existing resource file.
     ///
     /// We will neither modify this file nor parse its contents. This function
-    /// simply replaces the internaly generated resource file that is passed to
+    /// simply replaces the internally generated resource file that is passed to
     /// the compiler. You can use this function to write a resource file yourself.
     pub fn set_resource_file<'a>(&mut self, path: &'a str) -> &mut Self {
         self.rc_file = Some(path.to_string());
@@ -613,7 +613,7 @@ impl WindowsResource {
         self
     }
 
-    /// Override the output directoy.
+    /// Override the output directory.
     ///
     /// As a default, we use `%OUT_DIR%` set by cargo, but it may be necessary to override the
     /// the setting.
@@ -713,7 +713,7 @@ impl WindowsResource {
         let command = command.arg(format!("/I{}", env::var("CARGO_MANIFEST_DIR").unwrap()));
 
         if self.add_toolkit_include {
-            let root = win_sdk_inlcude_root(&rc_exe);
+            let root = win_sdk_include_root(&rc_exe);
             println!("Adding toolkit include: {}", root.display());
             command.arg(format!("/I{}", root.join("um").display()));
             command.arg(format!("/I{}", root.join("shared").display()));
@@ -871,7 +871,7 @@ fn escape_string(string: &str) -> String {
     escaped
 }
 
-fn win_sdk_inlcude_root(path: &Path) -> PathBuf {
+fn win_sdk_include_root(path: &Path) -> PathBuf {
     let mut tools_path = PathBuf::new();
     let mut iter = path.iter();
     while let Some(p) = iter.next() {
@@ -893,7 +893,7 @@ fn win_sdk_inlcude_root(path: &Path) -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::escape_string;
-    use super::win_sdk_inlcude_root;
+    use super::win_sdk_include_root;
 
     #[test]
     fn string_escaping() {
@@ -910,7 +910,7 @@ mod tests {
     fn toolkit_include_win10() {
         use std::path::Path;
 
-        let res = win_sdk_inlcude_root(Path::new(
+        let res = win_sdk_include_root(Path::new(
             r"C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64\rc.exe",
         ));
         assert_eq!(
@@ -923,7 +923,7 @@ mod tests {
     fn toolkit_include_win8() {
         use std::path::Path;
 
-        let res = win_sdk_inlcude_root(Path::new(
+        let res = win_sdk_include_root(Path::new(
             r"C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe",
         ));
         assert_eq!(
