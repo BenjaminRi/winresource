@@ -1,6 +1,7 @@
 /.idea/
 /target/
 /example/target
+/multi_binary_example/target
 Cargo.lock
 *~
 *.bk
