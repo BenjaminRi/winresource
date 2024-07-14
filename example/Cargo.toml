@@ -13,11 +13,8 @@ LegalCopyright = "Copyright © 2016-2017"
 # this FileDescription overrides package.description
 FileDescription = "Example for \"winres\""
 
-[dependencies]
-winapi = { version = "0.3", features = [ "winuser" ] }
-
 # always use target build-dependencies for winres so that
 # it won't get pulled for non-windows OSs (saves them resources)
 [build-dependencies]
 # winres project
-winres = { path = ".." }
+winresource = { path = ".." }
