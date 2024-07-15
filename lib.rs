@@ -52,6 +52,7 @@ use std::io;
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::process;
+use std::str::FromStr;
 
 #[cfg(feature = "toml")]
 extern crate toml;
@@ -696,16 +697,23 @@ impl WindowsResource {
     }
 
     fn compile_with_toolkit_msvc<'a>(&self, input: &'a str, output_dir: &'a str) -> io::Result<()> {
-        let rc_exe = PathBuf::from(&self.toolkit_path).join("rc.exe");
-        let rc_exe = if !rc_exe.exists() {
-            if cfg!(target_arch = "x86_64") {
-                PathBuf::from(&self.toolkit_path).join(r"bin\x64\rc.exe")
-            } else {
-                PathBuf::from(&self.toolkit_path).join(r"bin\x86\rc.exe")
-            }
+        let rc_exe = if let Ok(rc_path) = std::env::var("RC_PATH") {
+            PathBuf::from_str(&rc_path).unwrap()
+        } else if cfg!(unix) {
+            PathBuf::from_str("llvm-rc").unwrap()
         } else {
-            rc_exe
+            let rc_exe = PathBuf::from(&self.toolkit_path).join("rc.exe");
+            if !rc_exe.exists() {
+                if cfg!(target_arch = "x86_64") {
+                    PathBuf::from(&self.toolkit_path).join(r"bin\x64\rc.exe")
+                } else {
+                    PathBuf::from(&self.toolkit_path).join(r"bin\x86\rc.exe")
+                }
+            } else {
+                rc_exe
+            }
         };
+
         println!("Selected RC path: '{}'", rc_exe.display());
         let output = PathBuf::from(output_dir).join("resource.lib");
         let input = PathBuf::from(input);
