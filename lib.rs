@@ -701,10 +701,10 @@ impl WindowsResource {
     }
 
     fn compile_with_toolkit_msvc<'a>(&self, input: &'a str, output_dir: &'a str) -> io::Result<()> {
-        let rc_exe = if let Ok(rc_path) = std::env::var("RC_PATH") {
-            PathBuf::from_str(&rc_path).unwrap()
+        let rc_exe = if let Some(rc_path) = std::env::var_os("RC_PATH") {
+            PathBuf::from(rc_path)
         } else if cfg!(unix) {
-            PathBuf::from_str("llvm-rc").unwrap()
+            PathBuf::from("llvm-rc")
         } else {
             let rc_exe = PathBuf::from(&self.toolkit_path).join("rc.exe");
             if !rc_exe.exists() {
