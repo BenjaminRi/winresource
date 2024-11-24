@@ -227,6 +227,10 @@ impl WindowsResource {
                 // MinGW supports ARM64 only with an LLVM-based toolchain
                 // (x86 users might also be using LLVM, but we can't tell that from the Rust target...)
                 "aarch64-pc-windows-gnu" => "llvm-",
+                // *-gnullvm targets by definition use LLVM-based toolchains
+                "x86_64-pc-windows-gnullvm"
+                | "i686-pc-windows-gnullvm"
+                | "aarch64-pc-windows-gnullvm" => "llvm-",
                 // fail safe
                 _ => {
                     println!(
