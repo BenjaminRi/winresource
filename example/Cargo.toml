@@ -1,20 +1,17 @@
 [package]
-name = "winres-example"
-description = "Example for winres"
-version = "0.1.3"
+name = "winresource-example"
+description = "Example for winresource"
+version = "0.1.4"
 authors = ["Max Resch <resch.max@gmail.com>"]
 license = "MIT"
-repository = "https://github.com/mxre/winres"
-documentation = "https://mxre.github.io/winres"
+repository = "https://github.com/BenjaminRi/winresource"
+documentation = "https://docs.rs/winresource/*/winresource/"
 build = "build.rs"
 
-[package.metadata.winres]
-LegalCopyright = "Copyright © 2016-2017"
-# this FileDescription overrides package.description
-FileDescription = "Example for \"winres\""
+[package.metadata.winresource]
+LegalCopyright = "Copyright © 2016-2024"
+# This FileDescription overrides package.description:
+FileDescription = "Example for \"winresource\" (override)"
 
-# always use target build-dependencies for winres so that
-# it won't get pulled for non-windows OSs (saves them resources)
 [build-dependencies]
-# winres project
 winresource = { path = ".." }
