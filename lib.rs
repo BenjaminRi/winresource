@@ -52,7 +52,6 @@ use std::io;
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::process;
-use std::str::FromStr;
 
 #[cfg(feature = "toml")]
 extern crate toml;
