@@ -9,9 +9,13 @@ documentation = "https://docs.rs/winresource/*/winresource/"
 build = "build.rs"
 
 [package.metadata.winresource]
+# Because Windows uses `FileDescription` as the application name in
+# various places like the Task Manager and error dialogs, it is highly
+# recommended to override `FileDescription` and set it to a short,
+# usually title cased application name.
+# By default, the `FileDescription` is set to the package name.
+FileDescription = "Winresource Example"
 LegalCopyright = "Copyright © 2016-2024"
-# This FileDescription overrides package.description:
-FileDescription = "Example for \"winresource\" (override)"
 
 [build-dependencies]
 winresource = { path = ".." }

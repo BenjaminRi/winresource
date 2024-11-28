@@ -163,18 +163,12 @@ impl WindowsResource {
             env::var("CARGO_PKG_NAME").unwrap(),
         );
 
-        // If there is no description, fallback to name
-        let description = if let Ok(description) = env::var("CARGO_PKG_DESCRIPTION") {
-            if !description.is_empty() {
-                description
-            } else {
-                env::var("CARGO_PKG_NAME").unwrap()
-            }
-        } else {
-            env::var("CARGO_PKG_NAME").unwrap()
-        };
-
-        props.insert("FileDescription".to_string(), description);
+        // Note: It is not a mistake that we use the package name as `FileDescription`.
+        // Windows uses the `FileDescription` as the application name in tools and dialogs.
+        props.insert(
+            "FileDescription".to_string(),
+            env::var("CARGO_PKG_NAME").unwrap(),
+        );
 
         #[cfg(feature = "toml")]
         parse_cargo_toml(&mut props).unwrap();
