@@ -13,7 +13,7 @@
 //! # extern crate winresource;
 //! # use std::io;
 //! # fn test_main() -> io::Result<()> {
-//! if cfg!(target_os = "windows") {
+//! if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
 //!     let mut res = winresource::WindowsResource::new();
 //!     res.set_icon("test.ico")
 //! #      .set_output_directory(".")
@@ -322,7 +322,7 @@ impl WindowsResource {
     /// extern crate winresource;
     /// # use std::io;
     /// fn main() {
-    ///   if cfg!(target_os = "windows") {
+    ///   if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
     ///     let mut res = winresource::WindowsResource::new();
     /// #   res.set_output_directory(".");
     ///     res.set_language(winapi::um::winnt::MAKELANGID(
@@ -577,7 +577,7 @@ impl WindowsResource {
     ///
     /// ```rust
     /// # extern crate winresource;
-    /// # if cfg!(target_os = "windows") {
+    /// # if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
     ///     let mut res = winresource::WindowsResource::new();
     ///     res.append_rc_content(r##"sample MENU
     /// {
