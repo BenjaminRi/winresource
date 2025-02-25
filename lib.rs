@@ -198,7 +198,7 @@ impl WindowsResource {
         ver.insert(VersionInfo::FILEFLAGSMASK, 0x3F);
         ver.insert(VersionInfo::FILEFLAGS, 0);
 
-        let sdk = if cfg!(target_env = "msvc") {
+        let sdk = if cfg!(all(windows, target_env = "msvc")) {
             match get_sdk() {
                 Ok(mut v) => v.pop().unwrap(),
                 Err(_) => PathBuf::new(),
@@ -212,11 +212,14 @@ impl WindowsResource {
         let prefix = if let Ok(cross) = env::var("CROSS_COMPILE") {
             cross
         } else if env::var_os("HOST").unwrap() != env::var_os("TARGET").unwrap()
-            && cfg!(not(target_env = "msvc"))
+            && cfg!(not(all(windows, target_env = "msvc"))) // use mingw32 under linux
         {
             match env::var("TARGET").unwrap().as_str() {
+                "x86_64-pc-windows-msvc" | // use mingw32 under linux
                 "x86_64-pc-windows-gnu" => "x86_64-w64-mingw32-",
+                "i686-pc-windows-msvc" | // use mingw32 under linux
                 "i686-pc-windows-gnu" => "i686-w64-mingw32-",
+                "i586-pc-windows-msvc" | // // use mingw32 under linux
                 "i586-pc-windows-gnu" => "i586-w64-mingw32-",
                 // MinGW supports ARM64 only with an LLVM-based toolchain
                 // (x86 users might also be using LLVM, but we can't tell that from the Rust target...)
@@ -226,9 +229,9 @@ impl WindowsResource {
                 | "i686-pc-windows-gnullvm"
                 | "aarch64-pc-windows-gnullvm" => "llvm-",
                 // fail safe
-                _ => {
+                target => {
                     println!(
-                        "cargo:warning=unknown Windows target used for cross-compilation; \
+                        "cargo:warning=unknown Windows target {target} used for cross-compilation; \
                               invoking unprefixed windres"
                     );
                     ""
@@ -447,6 +450,7 @@ impl WindowsResource {
     /// Thus, everytime it is executed, a Windows UAC dialog will appear.
     ///
     /// ```rust
+    /// if std::env::var("CARGO_CFG_TARGET_OS").unwrap_or("".to_string()) == "windows" {
     /// let mut res = winresource::WindowsResource::new();
     /// res.set_manifest(r#"
     /// <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
@@ -459,6 +463,7 @@ impl WindowsResource {
     /// </trustInfo>
     /// </assembly>
     /// "#);
+    /// }
     /// ```
     pub fn set_manifest<'a>(&mut self, manifest: &'a str) -> &mut Self {
         self.manifest_file = None;
@@ -576,8 +581,8 @@ impl WindowsResource {
     /// Define a menu resource:
     ///
     /// ```rust
-    /// # extern crate winresource;
-    /// # if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
+    /// extern crate winresource;
+    /// # if std::env::var("CARGO_CFG_TARGET_OS").unwrap_or("".to_string()) == "windows" {
     ///     let mut res = winresource::WindowsResource::new();
     ///     res.append_rc_content(r##"sample MENU
     /// {
@@ -689,6 +694,13 @@ impl WindowsResource {
         }
     }
 
+    #[cfg(not(windows))]
+    #[inline(always)]
+    fn compile_with_toolkit_msvc<'a>(&self, input: &'a str, output_dir: &'a str) -> io::Result<()> {
+       self.compile_with_toolkit_gnu(input, output_dir)
+    }
+
+    #[cfg(windows)]
     fn compile_with_toolkit_msvc<'a>(&self, input: &'a str, output_dir: &'a str) -> io::Result<()> {
         let rc_exe = if let Some(rc_path) = std::env::var_os("RC_PATH") {
             PathBuf::from(rc_path)
@@ -719,7 +731,6 @@ impl WindowsResource {
             command.arg(format!("/I{}", root.join("um").display()));
             command.arg(format!("/I{}", root.join("shared").display()));
         }
-
         let status = command
             .arg(format!("/fo{}", output.display()))
             .arg(format!("{}", input.display()))
@@ -872,6 +883,7 @@ fn escape_string(string: &str) -> String {
     escaped
 }
 
+#[allow(dead_code)]
 fn win_sdk_include_root(path: &Path) -> PathBuf {
     let mut tools_path = PathBuf::new();
     let mut iter = path.iter();
@@ -908,12 +920,14 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(not(target_os = "windows"), ignore)]
     fn toolkit_include_win10() {
         use std::path::Path;
 
         let res = win_sdk_include_root(Path::new(
-            r"C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64\rc.exe",
+        r"C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64\rc.exe",
         ));
+
         assert_eq!(
             res.as_os_str(),
             r"C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0"
@@ -921,6 +935,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(not(target_os = "windows"), ignore)]
     fn toolkit_include_win8() {
         use std::path::Path;
 
