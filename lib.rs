@@ -212,14 +212,15 @@ impl WindowsResource {
         let prefix = if let Ok(cross) = env::var("CROSS_COMPILE") {
             cross
         } else if env::var_os("HOST").unwrap() != env::var_os("TARGET").unwrap()
-            && cfg!(not(all(windows, target_env = "msvc"))) // use mingw32 under linux
+            && cfg!(not(all(windows, target_env = "msvc")))
+        // use mingw32 under linux
         {
             match env::var("TARGET").unwrap().as_str() {
                 "x86_64-pc-windows-msvc" | // use mingw32 under linux
                 "x86_64-pc-windows-gnu" => "x86_64-w64-mingw32-",
                 "i686-pc-windows-msvc" | // use mingw32 under linux
                 "i686-pc-windows-gnu" => "i686-w64-mingw32-",
-                "i586-pc-windows-msvc" | // // use mingw32 under linux
+                "i586-pc-windows-msvc" | // use mingw32 under linux
                 "i586-pc-windows-gnu" => "i586-w64-mingw32-",
                 // MinGW supports ARM64 only with an LLVM-based toolchain
                 // (x86 users might also be using LLVM, but we can't tell that from the Rust target...)
@@ -697,7 +698,7 @@ impl WindowsResource {
     #[cfg(not(windows))]
     #[inline(always)]
     fn compile_with_toolkit_msvc<'a>(&self, input: &'a str, output_dir: &'a str) -> io::Result<()> {
-       self.compile_with_toolkit_gnu(input, output_dir)
+        self.compile_with_toolkit_gnu(input, output_dir)
     }
 
     #[cfg(windows)]
@@ -925,7 +926,7 @@ mod tests {
         use std::path::Path;
 
         let res = win_sdk_include_root(Path::new(
-        r"C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64\rc.exe",
+            r"C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64\rc.exe",
         ));
 
         assert_eq!(
