@@ -292,7 +292,7 @@ impl WindowsResource {
     ///
     /// It is possible to use arbitrary field names but Windows Explorer and other
     /// tools might not show them.
-    pub fn set<'a>(&mut self, name: &'a str, value: &'a str) -> &mut Self {
+    pub fn set(&mut self, name: &str, value: &str) -> &mut Self {
         self.properties.insert(name.to_string(), value.to_string());
         self
     }
@@ -312,7 +312,7 @@ impl WindowsResource {
     ///
     /// If it is left unset, it will look up a path in the registry,
     /// i.e. `HKLM\SOFTWARE\Microsoft\Windows Kits\Installed Roots`
-    pub fn set_toolkit_path<'a>(&mut self, path: &'a str) -> &mut Self {
+    pub fn set_toolkit_path(&mut self, path: &str) -> &mut Self {
         self.toolkit_path = PathBuf::from(path);
         self
     }
@@ -375,7 +375,7 @@ impl WindowsResource {
     /// or relative to the projects root.
     ///
     /// Equivalent to `set_icon_with_id(path, "1")`.
-    pub fn set_icon<'a>(&mut self, path: &'a str) -> &mut Self {
+    pub fn set_icon(&mut self, path: &str) -> &mut Self {
         const DEFAULT_APPLICATION_ICON_ID: &str = "1";
 
         self.set_icon_with_id(path, DEFAULT_APPLICATION_ICON_ID)
@@ -428,7 +428,7 @@ impl WindowsResource {
     ///    .set_icon_with_id("icon3.icon", "3")
     ///    // ...
     /// ```
-    pub fn set_icon_with_id<'a>(&mut self, path: &'a str, name_id: &'a str) -> &mut Self {
+    pub fn set_icon_with_id(&mut self, path: &str, name_id: &str) -> &mut Self {
         self.icons.push(Icon {
             path: path.into(),
             name_id: name_id.into(),
@@ -466,7 +466,7 @@ impl WindowsResource {
     /// "#);
     /// }
     /// ```
-    pub fn set_manifest<'a>(&mut self, manifest: &'a str) -> &mut Self {
+    pub fn set_manifest(&mut self, manifest: &str) -> &mut Self {
         self.manifest_file = None;
         self.manifest = Some(manifest.to_string());
         self
@@ -478,7 +478,7 @@ impl WindowsResource {
     ///
     /// [`set_manifest()`]: #method.set_manifest
     /// [`set_icon()`]: #method.set_icon
-    pub fn set_manifest_file<'a>(&mut self, file: &'a str) -> &mut Self {
+    pub fn set_manifest_file(&mut self, file: &str) -> &mut Self {
         self.manifest_file = Some(file.to_string());
         self.manifest = None;
         self
@@ -570,7 +570,7 @@ impl WindowsResource {
     /// We will neither modify this file nor parse its contents. This function
     /// simply replaces the internally generated resource file that is passed to
     /// the compiler. You can use this function to write a resource file yourself.
-    pub fn set_resource_file<'a>(&mut self, path: &'a str) -> &mut Self {
+    pub fn set_resource_file(&mut self, path: &str) -> &mut Self {
         self.rc_file = Some(path.to_string());
         self
     }
@@ -605,7 +605,7 @@ impl WindowsResource {
     /// # }
     /// # Ok::<_, std::io::Error>(())
     /// ```
-    pub fn append_rc_content<'a>(&mut self, content: &'a str) -> &mut Self {
+    pub fn append_rc_content(&mut self, content: &str) -> &mut Self {
         if !(self.append_rc_content.ends_with('\n') || self.append_rc_content.is_empty()) {
             self.append_rc_content.push('\n');
         }
@@ -617,12 +617,12 @@ impl WindowsResource {
     ///
     /// As a default, we use `%OUT_DIR%` set by cargo, but it may be necessary to override the
     /// the setting.
-    pub fn set_output_directory<'a>(&mut self, path: &'a str) -> &mut Self {
+    pub fn set_output_directory(&mut self, path: &str) -> &mut Self {
         self.output_directory = path.to_string();
         self
     }
 
-    fn compile_with_toolkit_gnu<'a>(&self, input: &'a str, output_dir: &'a str) -> io::Result<()> {
+    fn compile_with_toolkit_gnu(&self, input: &str, output_dir: &str) -> io::Result<()> {
         let output = PathBuf::from(output_dir).join("resource.o");
         let input = PathBuf::from(input);
         let status = process::Command::new(&self.windres_path)
@@ -695,7 +695,7 @@ impl WindowsResource {
         }
     }
 
-    fn compile_with_toolkit_msvc<'a>(&self, input: &'a str, output_dir: &'a str) -> io::Result<()> {
+    fn compile_with_toolkit_msvc(&self, input: &str, output_dir: &str) -> io::Result<()> {
         let rc_exe = if let Some(rc_path) = std::env::var_os("RC_PATH") {
             PathBuf::from(rc_path)
         } else if cfg!(unix) {
