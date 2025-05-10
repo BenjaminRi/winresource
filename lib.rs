@@ -727,6 +727,7 @@ impl WindowsResource {
         }
         let status = command
             .arg(format!("/fo{}", output.display()))
+            .arg("--")
             .arg(format!("{}", input.display()))
             .output()?;
 
