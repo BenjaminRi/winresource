@@ -695,13 +695,6 @@ impl WindowsResource {
         }
     }
 
-    #[cfg(not(windows))]
-    #[inline(always)]
-    fn compile_with_toolkit_msvc<'a>(&self, input: &'a str, output_dir: &'a str) -> io::Result<()> {
-        self.compile_with_toolkit_gnu(input, output_dir)
-    }
-
-    #[cfg(windows)]
     fn compile_with_toolkit_msvc<'a>(&self, input: &'a str, output_dir: &'a str) -> io::Result<()> {
         let rc_exe = if let Some(rc_path) = std::env::var_os("RC_PATH") {
             PathBuf::from(rc_path)
