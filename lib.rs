@@ -326,7 +326,8 @@ impl WindowsResource {
     /// extern crate winresource;
     /// # use std::io;
     /// fn main() {
-    ///   if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
+    ///   #[cfg(windows)]
+    ///   {
     ///     let mut res = winresource::WindowsResource::new();
     /// #   res.set_output_directory(".");
     ///     res.set_language(winapi::um::winnt::MAKELANGID(
@@ -725,11 +726,14 @@ impl WindowsResource {
             command.arg(format!("/I{}", root.join("um").display()));
             command.arg(format!("/I{}", root.join("shared").display()));
         }
-        let status = command
-            .arg(format!("/fo{}", output.display()))
-            .arg("--")
-            .arg(format!("{}", input.display()))
-            .output()?;
+
+        command.arg(format!("/fo{}", output.display()));
+
+        if cfg!(unix) {
+            command.arg("--");
+        }
+
+        let status = command.arg(format!("{}", input.display())).output()?;
 
         println!(
             "RC Output:\n{}\n------",
