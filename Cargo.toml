@@ -1,5 +1,4 @@
 [package]
-edition = "2021"
 name = "winresource"
 description = "Create and set windows icons and metadata for executables"
 version = "0.1.21"

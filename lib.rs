@@ -321,13 +321,12 @@ impl WindowsResource {
     ///
     /// # Example
     ///
-    /// ```no_run
+    /// ```
     /// extern crate winapi;
     /// extern crate winresource;
     /// # use std::io;
     /// fn main() {
-    ///   if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows"
-    ///   {
+    ///   if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
     ///     let mut res = winresource::WindowsResource::new();
     /// #   res.set_output_directory(".");
     ///     res.set_language(winapi::um::winnt::MAKELANGID(
@@ -726,18 +725,11 @@ impl WindowsResource {
             command.arg(format!("/I{}", root.join("um").display()));
             command.arg(format!("/I{}", root.join("shared").display()));
         }
-
-        command.arg(format!("/fo{}", output.display()));
-
-        if cfg!(unix) {
-            // Fix for https://github.com/llvm/llvm-project/issues/63426
-            command.args(["/C", "65001"]);
-
-            // Ensure paths starting with "/Users" on macOS are not interpreted as a /U option
-            command.arg("--");
-        }
-
-        let status = command.arg(format!("{}", input.display())).output()?;
+        let status = command
+            .arg(format!("/fo{}", output.display()))
+            .arg("--")
+            .arg(format!("{}", input.display()))
+            .output()?;
 
         println!(
             "RC Output:\n{}\n------",

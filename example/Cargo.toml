@@ -1,5 +1,4 @@
 [package]
-edition = "2021"
 name = "winresource-example"
 description = "Example for winresource"
 version = "0.1.4"
