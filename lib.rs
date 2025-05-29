@@ -326,7 +326,7 @@ impl WindowsResource {
     /// extern crate winresource;
     /// # use std::io;
     /// fn main() {
-    ///   #[cfg(windows)]
+    ///   if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows"
     ///   {
     ///     let mut res = winresource::WindowsResource::new();
     /// #   res.set_output_directory(".");
