@@ -1,4 +1,4 @@
-# winresource [![CI](https://github.com/BenjaminRi/winresource/actions/workflows/ci.yml/badge.svg)](https://github.com/BenjaminRi/winresource/actions/workflows/ci.yml)
+# winresource [![Crates.io](https://img.shields.io/crates/v/winresource.svg)](https://crates.io/crates/winresource) [![CI](https://github.com/BenjaminRi/winresource/actions/workflows/ci.yml/badge.svg)](https://github.com/BenjaminRi/winresource/actions/workflows/ci.yml)
 
 A small [Rust](https://www.rust-lang.org/) library to facilitate adding [Resources](https://en.wikipedia.org/wiki/Resource_(Windows)) (metainformation and icons) to [Portable Executables](https://en.wikipedia.org/wiki/Portable_Executable) (Windows executables and dynamic libraries). Further details: [API documentation](https://docs.rs/winresource/*/winresource/) and [published crate](https://crates.io/crates/winresource).
 
