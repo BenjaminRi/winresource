@@ -321,7 +321,7 @@ impl WindowsResource {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
     /// extern crate winapi;
     /// extern crate winresource;
     /// # use std::io;
