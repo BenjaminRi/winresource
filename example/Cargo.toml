@@ -16,7 +16,7 @@ build = "build.rs"
 # usually title cased application name.
 # By default, the `FileDescription` is set to the package name.
 FileDescription = "Winresource Example"
-LegalCopyright = "Copyright 2016-2024"
+LegalCopyright = "Copyright © 2016-2024"
 
 [build-dependencies]
 winresource = { path = ".." }
