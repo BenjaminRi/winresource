@@ -728,13 +728,13 @@ impl WindowsResource {
 
         command.arg(format!("/fo{}", output.display()));
 
-        
+        if cfg!(unix) {
             // Fix for https://github.com/llvm/llvm-project/issues/63426
-            command.args(["/C", "65001"]);
+            //command.args(["/C", "65001"]);
 
             // Ensure paths starting with "/Users" on macOS are not interpreted as a /U option
             command.arg("--");
-        
+        }
 
         let status = command.arg(format!("{}", input.display())).output()?;
 
