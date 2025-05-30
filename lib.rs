@@ -641,7 +641,7 @@ impl WindowsResource {
         let libname = PathBuf::from(output_dir).join("libresource.a");
         let status = process::Command::new(&self.ar_path)
             .current_dir(&self.toolkit_path)
-            .arg("rsc")
+            .arg("rscsejfoisejfoisejf")
             .arg(format!("{}", libname.display()))
             .arg(format!("{}", output.display()))
             .status()?;
@@ -730,7 +730,7 @@ impl WindowsResource {
 
         if cfg!(unix) {
             // Fix for https://github.com/llvm/llvm-project/issues/63426
-            //command.args(["/C", "65001"]);
+            command.args(["/C", "65001"]);
 
             // Ensure paths starting with "/Users" on macOS are not interpreted as a /U option
             command.arg("--");
