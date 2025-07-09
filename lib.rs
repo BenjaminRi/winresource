@@ -623,11 +623,24 @@ impl WindowsResource {
     }
 
     fn compile_with_toolkit_gnu(&self, input: &str, output_dir: &str) -> io::Result<()> {
+        let bfd_target = match env::var("CARGO_CFG_TARGET_ARCH").unwrap().as_str() {
+            "x86_64" => &["--target", "pe-x86-64"][..],
+            "x86" => &["--target", "pe-i386"],
+            // The case below would be correct for AArch64, but LLVM's windres does not handle
+            // the conversion from this BFD target to its LLVM target, treating it as a native
+            // LLVM target instead, which causes an error. Obviously, passing a LLVM target
+            // is not portable to the binutils windres implementation. So, to prevent breaking
+            // native AArch64 compilation with the LLVM toolchain, let's fall back to the default
+            // target, which would provide the highest success rate
+            //"aarch64" => &["--target", "pe-aarch64-little"],
+            _ => &[], // A quite strange arch - use the default windres target and hope for the best
+        };
         let output = PathBuf::from(output_dir).join("resource.o");
         let input = PathBuf::from(input);
         let status = process::Command::new(&self.windres_path)
             .current_dir(&self.toolkit_path)
             .arg(format!("-I{}", env::var("CARGO_MANIFEST_DIR").unwrap()))
+            .args(bfd_target)
             .arg(format!("{}", input.display()))
             .arg(format!("{}", output.display()))
             .status()?;
