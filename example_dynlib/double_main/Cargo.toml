@@ -1,0 +1,10 @@
+[package]
+name = "double_main"
+version = "0.5.1"
+edition = "2024"
+
+[dependencies]
+double_driver = { version = "0.1.0", path = "../double_driver" }
+
+[build-dependencies]
+winresource = { path = "../.." }
