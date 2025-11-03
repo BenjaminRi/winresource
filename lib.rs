@@ -858,23 +858,23 @@ fn parse_cargo_toml(props: &mut BTreeMap<String, String>) -> io::Result<()> {
                             if let Some(v) = v.as_str() {
                                 props.insert(k.clone(), v.to_string());
                             } else {
-                                println!("package.metadata.winresource.{} is not a string", k);
+                                println!("cargo::warning=package.metadata.winresource.{} is not a string", k);
                             }
                         }
                     } else {
-                        println!("package.metadata.winresource is not a table");
+                        println!("cargo::warning=package.metadata.winresource is not a table");
                     }
                 } else {
-                    println!("package.metadata.winresource does not exist");
+                    println!("cargo::warning=package.metadata.winresource does not exist");
                 }
             } else {
-                println!("package.metadata does not exist");
+                println!("cargo::warning=package.metadata does not exist");
             }
         } else {
-            println!("package does not exist");
+            println!("cargo::warning=package does not exist");
         }
     } else {
-        println!("TOML parsing error")
+        println!("cargo::warning=TOML parsing error")
     }
     Ok(())
 }
