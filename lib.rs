@@ -848,7 +848,7 @@ fn parse_cargo_toml(props: &mut BTreeMap<String, String>) -> io::Result<()> {
     let mut f = fs::File::open(cargo)?;
     let mut cargo_toml = String::new();
     f.read_to_string(&mut cargo_toml)?;
-    if let Ok(ml) = cargo_toml.parse::<toml::Value>() {
+    if let Ok(ml) = cargo_toml.parse::<toml::Table>() {
         if let Some(pkg) = ml.get("package") {
             if let Some(pkg) = pkg.get("metadata") {
                 if let Some(pkg) = pkg.get("winresource") {
