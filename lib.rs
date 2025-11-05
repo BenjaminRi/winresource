@@ -865,16 +865,19 @@ fn parse_cargo_toml(props: &mut BTreeMap<String, String>) -> io::Result<()> {
                         println!("cargo::warning=package.metadata.winresource is not a table");
                     }
                 } else {
-                    println!("cargo::warning=package.metadata.winresource does not exist");
+                    // It is optional to specify the `[package.metadata.winresource]` section in Cargo.toml; do nothing
+                    // println!("cargo::warning=Section `[package.metadata.winresource]` not found in Cargo.toml");
                 }
             } else {
-                println!("cargo::warning=package.metadata does not exist");
+                // It is optional to specify the `[package.metadata]` section in Cargo.toml; do nothing
+                // println!("cargo::warning=Section `[package.metadata]` not found in Cargo.toml");
             }
         } else {
-            println!("cargo::warning=package does not exist");
+            // We expect that if `Cargo.toml` exists, it must contain a `[package]` section
+            println!("cargo::warning=Section `[package]` not found in Cargo.toml");
         }
     } else {
-        println!("cargo::warning=TOML parsing error")
+        println!("cargo::warning=TOML parsing error in Cargo.toml")
     }
     Ok(())
 }
