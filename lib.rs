@@ -322,26 +322,26 @@ impl WindowsResource {
     /// # Example
     ///
     /// ```no_run
-    /// extern crate winapi;
+    /// extern crate windows;
     /// extern crate winresource;
     /// # use std::io;
     /// fn main() {
     ///   if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
+    ///     let primary = windows::Win32::System::SystemServices::LANG_ENGLISH;
+    ///     let secondary = windows::Win32::System::SystemServices::SUBLANG_ENGLISH_US;
+    ///     let lang_id = ((secondary as u16) << 10) | (primary as u16);
+    ///
     ///     let mut res = winresource::WindowsResource::new();
-    /// #   res.set_output_directory(".");
-    ///     res.set_language(winapi::um::winnt::MAKELANGID(
-    ///         winapi::um::winnt::LANG_ENGLISH,
-    ///         winapi::um::winnt::SUBLANG_ENGLISH_US
-    ///     ));
+    ///     res.set_output_directory(".");
+    ///     res.set_language(lang_id);
     ///     res.compile().unwrap();
     ///   }
     /// }
     /// ```
-    /// For possible values look at the `winapi::um::winnt` constants, specifically those
+    /// For possible values look at the `windows::Win32::System::SystemServices` constants, specifically those
     /// starting with `LANG_` and `SUBLANG_`.
     ///
-    /// [`MAKELANGID`]: https://docs.rs/winapi/0.3/x86_64-pc-windows-msvc/winapi/um/winnt/fn.MAKELANGID.html
-    /// [`winapi::um::winnt`]: https://docs.rs/winapi/0.3/x86_64-pc-windows-msvc/winapi/um/winnt/index.html#constants
+    /// [`windows::Win32::System::SystemServices`]: https://microsoft.github.io/windows-docs-rs/doc/windows/Win32/System/SystemServices/index.html
     ///
     /// # Table
     /// Sometimes it is just simpler to specify the numeric constant directly
@@ -397,7 +397,7 @@ impl WindowsResource {
     /// When the name ID is an integer, the icon can be loaded at runtime with
     ///
     /// ```ignore
-    /// LoadIconW(h_instance, MAKEINTRESOURCEW(name_id_as_integer))
+    /// LoadIconW(h_instance, PWSTR::from_raw(name_id_as_integer as _))
     /// ```
     ///
     /// Otherwise, it can be loaded with
@@ -407,11 +407,8 @@ impl WindowsResource {
     /// ```
     ///
     /// Where `h_instance` is the module handle of the current executable
-    /// ([`GetModuleHandleW`](https://docs.rs/winapi/0.3.8/winapi/um/libloaderapi/fn.GetModuleHandleW.html)`(null())`),
-    /// [`LoadIconW`](https://docs.rs/winapi/0.3.8/winapi/um/winuser/fn.LoadIconW.html)
-    /// and
-    /// [`MAKEINTRESOURCEW`](https://docs.rs/winapi/0.3.8/winapi/um/winuser/fn.MAKEINTRESOURCEW.html)
-    /// are defined in winapi.
+    /// ([`GetModuleHandleW`](https://microsoft.github.io/windows-docs-rs/doc/windows/Win32/System/LibraryLoader/fn.GetModuleHandleW.html)`(null())`),
+    /// see [`LoadIconW`](https://microsoft.github.io/windows-docs-rs/doc/windows/Win32/UI/WindowsAndMessaging/fn.LoadIconW.html) for more details.
     ///
     /// ## Multiple Icons, Which One is Application Icon?
     ///
