@@ -774,7 +774,6 @@ impl WindowsResource {
 
 /// Find a Windows SDK
 fn get_sdk() -> io::Result<Vec<PathBuf>> {
-    // use the reg command, so we don't need a winapi dependency
     let output = process::Command::new("reg")
         .arg("query")
         .arg(r"HKLM\SOFTWARE\Microsoft\Windows Kits\Installed Roots")
