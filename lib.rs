@@ -642,10 +642,7 @@ impl WindowsResource {
             .arg(format!("{}", output.display()))
             .status()?;
         if !status.success() {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
-                "Could not compile resource file",
-            ));
+            return Err(io::Error::other("Could not compile resource file"));
         }
 
         let libname = PathBuf::from(output_dir).join("libresource.a");
@@ -656,8 +653,7 @@ impl WindowsResource {
             .arg(format!("{}", output.display()))
             .status()?;
         if !status.success() {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
+            return Err(io::Error::other(
                 "Could not create static library for resource file",
             ));
         }
@@ -698,8 +694,7 @@ impl WindowsResource {
         match target_env.as_str() {
             "gnu" => self.compile_with_toolkit_gnu(rc.as_str(), &self.output_directory),
             "msvc" => self.compile_with_toolkit_msvc(rc.as_str(), &self.output_directory),
-            _ => Err(io::Error::new(
-                io::ErrorKind::Other,
+            _ => Err(io::Error::other(
                 "Can only compile resource file when target_env is \"gnu\" or \"msvc\"",
             )),
         }
@@ -757,10 +752,7 @@ impl WindowsResource {
             String::from_utf8_lossy(&status.stderr)
         );
         if !status.status.success() {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
-                "Could not compile resource file",
-            ));
+            return Err(io::Error::other("Could not compile resource file"));
         }
 
         println!("cargo:rustc-link-search=native={}", output_dir);
@@ -778,18 +770,13 @@ fn get_sdk() -> io::Result<Vec<PathBuf>> {
         .output()?;
 
     if !output.status.success() {
-        return Err(io::Error::new(
-            io::ErrorKind::Other,
-            format!(
-                "Querying the registry failed with error message:\n{}",
-                String::from_utf8(output.stderr)
-                    .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?
-            ),
-        ));
+        return Err(io::Error::other(format!(
+            "Querying the registry failed with error message:\n{}",
+            String::from_utf8(output.stderr).map_err(|e| io::Error::other(e.to_string()))?
+        )));
     }
 
-    let lines = String::from_utf8(output.stdout)
-        .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
+    let lines = String::from_utf8(output.stdout).map_err(|e| io::Error::other(e.to_string()))?;
     let mut kits: Vec<PathBuf> = Vec::new();
     let mut lines: Vec<&str> = lines.lines().collect();
     lines.reverse();
@@ -829,10 +816,7 @@ fn get_sdk() -> io::Result<Vec<PathBuf>> {
         }
     }
     if kits.is_empty() {
-        return Err(io::Error::new(
-            io::ErrorKind::Other,
-            "Can not find Windows SDK",
-        ));
+        return Err(io::Error::other("Can not find Windows SDK"));
     }
 
     Ok(kits)
