@@ -754,8 +754,9 @@ impl WindowsResource {
         if !status.status.success() {
             return Err(io::Error::other("Could not compile resource file"));
         }
-        println!("cargo:rustc-link-search=native={}", output_dir);
+
         println!("cargo:rustc-link-arg={}", output.display());
+
         Ok(())
     }
 }
