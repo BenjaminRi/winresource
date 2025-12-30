@@ -59,7 +59,7 @@ extern crate toml;
 /// Version info field names
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum VersionInfo {
-    /// The version value consists of four 16 bit words, e.g.,&
+    /// The version value consists of four 16 bit words, e.g.,
     /// `MAJOR << 48 | MINOR << 32 | PATCH << 16 | RELEASE`
     FILEVERSION,
     /// The version value consists of four 16 bit words, e.g.,
