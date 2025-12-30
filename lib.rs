@@ -59,7 +59,7 @@ extern crate toml;
 /// Version info field names
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum VersionInfo {
-    /// The version value consists of four 16 bit words, e.g.,
+    /// The version value consists of four 16 bit words, e.g.,&
     /// `MAJOR << 48 | MINOR << 32 | PATCH << 16 | RELEASE`
     FILEVERSION,
     /// The version value consists of four 16 bit words, e.g.,
@@ -719,7 +719,7 @@ impl WindowsResource {
         };
 
         println!("Selected RC path: '{}'", rc_exe.display());
-        let output = PathBuf::from(output_dir).join("resource.lib");
+        let output = PathBuf::from(output_dir).join("resource.res");
         let input = PathBuf::from(input);
         let mut command = process::Command::new(&rc_exe);
         let command = command.arg(format!("/I{}", env::var("CARGO_MANIFEST_DIR").unwrap()));
@@ -754,9 +754,8 @@ impl WindowsResource {
         if !status.status.success() {
             return Err(io::Error::other("Could not compile resource file"));
         }
-
         println!("cargo:rustc-link-search=native={}", output_dir);
-        println!("cargo:rustc-link-lib=dylib=resource");
+        println!("cargo:rustc-link-arg={}", output.display());
         Ok(())
     }
 }
