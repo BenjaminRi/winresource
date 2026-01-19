@@ -78,6 +78,35 @@ pub enum VersionInfo {
     FILEFLAGS,
 }
 
+/// File flags for use with [`VersionInfo::FILEFLAGS`].
+///
+/// These constants correspond to the `VS_FF_*` values from the Windows SDK (`verrsrc.h`).
+///
+/// Multiple flags can be combined using bitwise OR:
+/// ```rust,ignore
+/// res.set_version_info(VersionInfo::FILEFLAGS, VersionInfo::VS_FF_DEBUG | VersionInfo::VS_FF_PRERELEASE);
+/// ```
+impl VersionInfo {
+    /// The file contains debugging information or is compiled with debugging features enabled.
+    pub const VS_FF_DEBUG: u64 = 0x01;
+    /// The file is a development version, not a commercially released product.
+    pub const VS_FF_PRERELEASE: u64 = 0x02;
+    /// The file has been modified and is not identical to the original shipping file
+    /// of the same version number.
+    pub const VS_FF_PATCHED: u64 = 0x04;
+    /// The file was not built using standard release procedures.
+    /// If this flag is set, the `PrivateBuild` string property should be set.
+    pub const VS_FF_PRIVATEBUILD: u64 = 0x08;
+    /// The file's version structure was created dynamically; therefore, some of the
+    /// members in this structure may be empty or incorrect.
+    /// This flag should never be set in a file's version info data.
+    pub const VS_FF_INFOINFERRED: u64 = 0x10;
+    /// The file was built by the original company using standard release procedures
+    /// but is a variation of the normal file of the same version number.
+    /// If this flag is set, the `SpecialBuild` string property should be set.
+    pub const VS_FF_SPECIALBUILD: u64 = 0x20;
+}
+
 #[derive(Debug)]
 struct Icon {
     path: String,
