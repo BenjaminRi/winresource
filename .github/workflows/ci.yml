@@ -61,3 +61,18 @@ jobs:
         run: |
           docker run -v .:/Users/winresource -w /Users/winresource/example xwin cargo xwin build --target x86_64-pc-windows-msvc
 
+  zig:
+    name: Build example on Linux using zig
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: mlugg/setup-zig@v2
+      - name: Install x86_64-pc-windows-gnu Rust target
+        run: rustup target add x86_64-pc-windows-gnu
+      - name: Install cargo-zigbuild
+        run: |
+          curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+          cargo binstall -y cargo-zigbuild
+      - name: Build example
+        run: cargo zigbuild --manifest-path example/Cargo.toml --target x86_64-pc-windows-gnu
