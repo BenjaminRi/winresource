@@ -719,6 +719,9 @@ impl WindowsResource {
             rc.to_str().unwrap().to_string()
         };
 
+        if is_using_zig_toolchain() {
+            return self.compile_with_toolkit_msvc(rc.as_str(), &self.output_directory);
+        }
         let target_env = std::env::var("CARGO_CFG_TARGET_ENV").unwrap();
         match target_env.as_str() {
             "gnu" => self.compile_with_toolkit_gnu(rc.as_str(), &self.output_directory),
@@ -732,6 +735,8 @@ impl WindowsResource {
     fn compile_with_toolkit_msvc(&self, input: &str, output_dir: &str) -> io::Result<()> {
         let rc_exe = if let Some(rc_path) = std::env::var_os("RC_PATH") {
             PathBuf::from(rc_path)
+        } else if is_using_zig_toolchain() {
+            PathBuf::from("zig")
         } else if cfg!(unix) {
             PathBuf::from("llvm-rc")
         } else {
@@ -751,7 +756,10 @@ impl WindowsResource {
         let output = PathBuf::from(output_dir).join("resource.res");
         let input = PathBuf::from(input);
         let mut command = process::Command::new(&rc_exe);
-        let command = command.arg(format!("/I{}", env::var("CARGO_MANIFEST_DIR").unwrap()));
+        if is_using_zig_toolchain() {
+            command.arg("rc");
+        }
+        command.arg(format!("/I{}", env::var("CARGO_MANIFEST_DIR").unwrap()));
 
         if self.add_toolkit_include {
             let root = win_sdk_include_root(&rc_exe);
@@ -788,6 +796,10 @@ impl WindowsResource {
 
         Ok(())
     }
+}
+
+fn is_using_zig_toolchain() -> bool {
+    env::var("RUSTC_LINKER").unwrap_or_default().contains("zig")
 }
 
 /// Find a Windows SDK
