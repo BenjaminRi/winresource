@@ -2,7 +2,7 @@
 edition = "2021"
 name = "winresource"
 description = "Create and set windows icons and metadata for executables"
-version = "0.1.31"
+version = "0.1.32"
 authors = ["Max Resch <resch.max@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/BenjaminRi/winresource"
@@ -15,7 +15,7 @@ path = "lib.rs"
 default = ["toml"]
 
 [dependencies]
-toml = { version = "1.0", optional = true, default-features = false, features = [
+toml = { version = "1.1", optional = true, default-features = false, features = [
     "std",
     "parse",
     "serde",
