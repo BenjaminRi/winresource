@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build example
         run: |
-          docker run -v .:/winresource -w /winresource/example gnu bash -lc "cargo build --target x86_64-pc-windows-gnu && ../.github/workflows/verify-example-resources-linux.sh target/x86_64-pc-windows-gnu/debug/winresource-example.exe"
+          docker run -v .:/winresource -w /winresource/example gnu bash -c "cargo build --target x86_64-pc-windows-gnu && ../.github/workflows/verify-example-resources-linux.sh target/x86_64-pc-windows-gnu/debug/winresource-example.exe"
 
   xwin:
     name: Build example using xwin
@@ -63,4 +63,4 @@ jobs:
       - name: Build example
         # Use a /Users path to test issues occurring on macOS where llvm-rc confuses input paths with /U options
         run: |
-          docker run -v .:/Users/winresource -w /Users/winresource/example xwin bash -lc "cargo xwin build --target x86_64-pc-windows-msvc && ../.github/workflows/verify-example-resources-linux.sh target/x86_64-pc-windows-msvc/debug/winresource-example.exe"
+          docker run -v .:/Users/winresource -w /Users/winresource/example xwin bash -c "cargo xwin build --target x86_64-pc-windows-msvc && ../.github/workflows/verify-example-resources-linux.sh target/x86_64-pc-windows-msvc/debug/winresource-example.exe"
