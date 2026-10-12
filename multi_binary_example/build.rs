@@ -6,13 +6,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         // This will cause the binaries to fail building with the below error:
         // "fatal error CVT1100: duplicate resource"
 
-        // let lib_res = tauri_winres::WindowsResource::new();
+        // let lib_res = winresource::WindowsResource::new();
         // lib_res.compile()?;
 
-        // Binary target with name "a"
+        // Binary target with name "example-a"
         let mut a_res = winresource::WindowsResource::new();
         a_res.set("FileDescription", "multi_binary_example - example A");
-        a_res.compile_for("a")?;
+        a_res.compile_for("example-a")?;
 
         // Binary target with name "example-b"
         let mut b_res = winresource::WindowsResource::new();
