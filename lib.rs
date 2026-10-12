@@ -230,7 +230,7 @@ impl WindowsResource {
         ver.insert(VersionInfo::FILEFLAGSMASK, 0x3F);
         ver.insert(VersionInfo::FILEFLAGS, 0);
 
-        let sdk = if cfg!(all(windows, target_env = "msvc")) {
+        let sdk = if env::var("CARGO_CFG_TARGET_ENV").unwrap() == "msvc" {
             get_sdk().unwrap_or_default()
         } else if cfg!(windows) {
             PathBuf::from("\\")
