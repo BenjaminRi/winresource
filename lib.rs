@@ -142,8 +142,8 @@ impl WindowsResource {
     ///
     /// | Field                | Cargo / Values               |
     /// |----------------------|------------------------------|
-    /// | `"FileVersion"`      | `package.version`            |
-    /// | `"ProductVersion"`   | `package.version`            |
+    /// | `"FileVersion"`      | `package.version` as Windows 4-part version |
+    /// | `"ProductVersion"`   | `package.version` as Windows 4-part version |
     /// | `"ProductName"`      | `package.name`               |
     /// | `"FileDescription"`  | `package.description`        |
     ///
@@ -182,29 +182,6 @@ impl WindowsResource {
         let mut props: BTreeMap<String, String> = BTreeMap::new();
         let mut ver: BTreeMap<VersionInfo, u64> = BTreeMap::new();
 
-        props.insert(
-            "FileVersion".to_string(),
-            env::var("CARGO_PKG_VERSION").unwrap(),
-        );
-        props.insert(
-            "ProductVersion".to_string(),
-            env::var("CARGO_PKG_VERSION").unwrap(),
-        );
-        props.insert(
-            "ProductName".to_string(),
-            env::var("CARGO_PKG_NAME").unwrap(),
-        );
-
-        // Note: It is not a mistake that we use the package name as `FileDescription`.
-        // Windows uses the `FileDescription` as the application name in tools and dialogs.
-        props.insert(
-            "FileDescription".to_string(),
-            env::var("CARGO_PKG_NAME").unwrap(),
-        );
-
-        #[cfg(feature = "toml")]
-        parse_cargo_toml(&mut props).unwrap();
-
         let mut version = 0_u64;
         version |= env::var("CARGO_PKG_VERSION_MAJOR")
             .unwrap()
@@ -222,6 +199,26 @@ impl WindowsResource {
             .unwrap_or(0)
             << 16;
         // version |= env::var("CARGO_PKG_VERSION_PRE").unwrap().parse().unwrap_or(0);
+
+        let version_string = version_info_to_string(version);
+
+        props.insert("FileVersion".to_string(), version_string.clone());
+        props.insert("ProductVersion".to_string(), version_string);
+        props.insert(
+            "ProductName".to_string(),
+            env::var("CARGO_PKG_NAME").unwrap(),
+        );
+
+        // Note: It is not a mistake that we use the package name as `FileDescription`.
+        // Windows uses the `FileDescription` as the application name in tools and dialogs.
+        props.insert(
+            "FileDescription".to_string(),
+            env::var("CARGO_PKG_NAME").unwrap(),
+        );
+
+        #[cfg(feature = "toml")]
+        parse_cargo_toml(&mut props).unwrap();
+
         ver.insert(VersionInfo::FILEVERSION, version);
         ver.insert(VersionInfo::PRODUCTVERSION, version);
         ver.insert(VersionInfo::FILEOS, 0x00040004);
@@ -982,6 +979,16 @@ fn parse_cargo_toml(props: &mut BTreeMap<String, String>) -> io::Result<()> {
     Ok(())
 }
 
+fn version_info_to_string(version: u64) -> String {
+    format!(
+        "{}.{}.{}.{}",
+        (version >> 48) as u16,
+        (version >> 32) as u16,
+        (version >> 16) as u16,
+        version as u16
+    )
+}
+
 fn escape_string(string: &str) -> String {
     let mut escaped = String::new();
     for chr in string.chars() {
@@ -1025,6 +1032,30 @@ fn win_sdk_include_root(path: &Path) -> PathBuf {
 mod tests {
     use super::escape_string;
     use super::win_sdk_include_root;
+    use super::WindowsResource;
+
+    #[test]
+    fn default_version_strings_use_fixed_version_format() {
+        std::env::set_var("CARGO_PKG_NAME", "winresource-test");
+        std::env::set_var("CARGO_PKG_VERSION", "1.2.3");
+        std::env::set_var("CARGO_PKG_VERSION_MAJOR", "1");
+        std::env::set_var("CARGO_PKG_VERSION_MINOR", "2");
+        std::env::set_var("CARGO_PKG_VERSION_PATCH", "3");
+        std::env::set_var("CARGO_MANIFEST_DIR", ".");
+        std::env::set_var("HOST", "x86_64-pc-windows-msvc");
+        std::env::set_var("TARGET", "x86_64-pc-windows-msvc");
+
+        let res = WindowsResource::new();
+
+        assert_eq!(
+            res.properties.get("FileVersion").map(String::as_str),
+            Some("1.2.3.0")
+        );
+        assert_eq!(
+            res.properties.get("ProductVersion").map(String::as_str),
+            Some("1.2.3.0")
+        );
+    }
 
     #[test]
     fn string_escaping() {
